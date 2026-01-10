@@ -24,11 +24,11 @@
         </div>
 
         <!-- Bank account number -->
-        <div class="mt-4">
+        <!-- <div class="mt-4">
             <x-input-label for="bank_account_number" :value="__('Bank Account Number')" />
             <x-text-input id="bank_account_number" class="block mt-1 w-full" type="text" pattern="\d{10,16}" inputmode="numeric" minlength="10" maxlength="16" name="bank_account_number" :value="old('bank_account_number')" required autofocus autocomplete="bank_account_number" />
             <x-input-error :messages="$errors->get('bank_account_number')" class="mt-2" />
-        </div>
+        </div> -->
 
         <!-- Email Address -->
         <div class="mt-4">

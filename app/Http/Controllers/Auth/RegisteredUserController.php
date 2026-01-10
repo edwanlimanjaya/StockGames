@@ -33,7 +33,7 @@ class RegisteredUserController extends Controller
             'username' => ['required', 'string', 'max:255', 'unique:'.User::class],
             'fullname' => ['required', 'string', 'max:255'],
             'birthdate' => ['required', 'date_format:Y-m-d'],
-            'bank_account_number' => ['required', 'string', 'regex:/^[0-9]{10,16}$/', 'unique:'.User::class],
+            // 'bank_account_number' => ['required', 'string', 'regex:/^[0-9]{10,16}$/', 'unique:'.User::class],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
@@ -42,7 +42,7 @@ class RegisteredUserController extends Controller
             'username' => $request->username,
             'fullname' => $request->fullname,
             'birthdate' => $request->birthdate,
-            'bank_account_number' => $request->bank_account_number,
+            // 'bank_account_number' => $request->bank_account_number,
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
@@ -51,6 +51,9 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
-        return redirect(route('dashboard', absolute: false));
+        $nextSession = 1;
+
+        return redirect()->route('game-session', ['session' => $nextSession]);
+        // return redirect(route('dashboard', absolute: false));
     }
 }
