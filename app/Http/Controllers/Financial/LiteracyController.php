@@ -33,10 +33,13 @@ class LiteracyController extends Controller
 
             $userId = $user->id;
 
-            $exists = LiteracyAnswer::where('user_id', $userId)
-                                    ->exists();
-
-            if ($exists) {
+            $totalQuestionsAll = LiteracyQuestion::count(); 
+            
+            $totalAnswersAll = LiteracyAnswer::where('user_id', $userId)->count(); 
+            
+            if ($totalAnswersAll >= $totalQuestionsAll) 
+            
+            { 
                 return $this->forceLogout();
             }
 
@@ -72,14 +75,6 @@ class LiteracyController extends Controller
 
                 if (in_array($questionId, $answeredIds)) {
                     continue;
-                }
-
-                $exists = LiteracyAnswer::where('literacy_question_id', $questionId)
-                                    ->where('user_id', $userId)
-                                    ->exists();
-
-                if ($exists) {
-                    return $this->forceLogout();
                 }
 
                 LiteracyAnswer::create([

@@ -34,10 +34,14 @@ class GameController extends Controller
 
             $userId = $user->id;
 
-            $exists = GameAnswer::where('user_id', $userId)
-                                    ->exists();
-            if ($exists) {
-                return $this->forceLogout();
+            $totalQuestionsAll = GameQuestion::count(); 
+            
+            $totalAnswersAll = GameAnswer::where('user_id', $userId)->count(); 
+            
+            if ($totalAnswersAll >= $totalQuestionsAll) 
+            
+            { 
+                return redirect()->route('financial-literacy'); 
             }
 
             $questions = GameQuestion::where('session', $session)->get();
@@ -86,14 +90,6 @@ class GameController extends Controller
                     continue;
                 }
 
-                $exists = GameAnswer::where('game_question_id', $questionId)
-                                    ->where('user_id', $userId)
-                                    ->exists();
-
-                if ($exists) {
-                    return $this->forceLogout();
-                }
-
                 $ids     = array_column($selected, 'id');
                 $reasons = array_column($selected, 'reason');
 
@@ -111,8 +107,7 @@ class GameController extends Controller
             Log::debug('next session is ' . $nextSession);
 
             if ($nextSession > $maxSession) {
-                return redirect()->route('financial-literacy')
-                                ->with('status', 'Sesi selesai. Terima kasih!');
+                return redirect()->route('financial-literacy');
             }
 
             return redirect()->route('game-session', ['session' => $nextSession])

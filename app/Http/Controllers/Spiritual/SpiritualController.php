@@ -33,10 +33,13 @@ class SpiritualController extends Controller
 
             $userId = $user->id;
 
-            $exists = SpiritualAnswer::where('user_id', $userId)
-                                    ->exists();
-
-            if ($exists) {
+            $totalQuestionsAll = SpiritualQuestion::count(); 
+            
+            $totalAnswersAll = SpiritualAnswer::where('user_id', $userId)->count(); 
+            
+            if ($totalAnswersAll >= $totalQuestionsAll) 
+            
+            { 
                 return $this->forceLogout();
             }
 
@@ -90,14 +93,6 @@ class SpiritualController extends Controller
             foreach ($scores as $questionId => $score) {
                 if (in_array($questionId, $answeredIds)) {
                     continue;
-                }
-
-                $exists = SpiritualAnswer::where('spiritual_question_id', $questionId)
-                                    ->where('user_id', $userId)
-                                    ->exists();
-
-                if ($exists) {
-                    return $this->forceLogout();
                 }
 
                 SpiritualAnswer::create([
