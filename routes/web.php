@@ -7,7 +7,7 @@ use App\Http\Controllers\Game\GameController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('auth.login');
+    return view('auth.register');
 });
 
 Route::get('/dashboard', function () {

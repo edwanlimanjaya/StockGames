@@ -49,11 +49,13 @@ class RegisteredUserController extends Controller
 
         event(new Registered($user));
 
-        Auth::login($user);
+        // Auth::login($user);
 
-        $nextSession = 1;
+        // $nextSession = 1;
 
-        return redirect()->route('game-session', ['session' => $nextSession]);
+        // return redirect()->route('game-session', ['session' => $nextSession]);
         // return redirect(route('dashboard', absolute: false));
+
+        return redirect()->route('login');
     }
 }

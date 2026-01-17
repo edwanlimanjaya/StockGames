@@ -76,9 +76,6 @@
                     Peserta diminta memberikan alasan yang jelas untuk setiap saham yang dipilih.
                 </li>
                 <li>
-                    Peserta tidak dituntut untuk mendapatkan return terbesar agar memperoleh apresiasi di akhir games.
-                </li>
-                <li>
                     Terdapat apresiasi tambahan sebesar Rp 250.000,- per orang untuk 6 peserta yang memberikan alasan pemilihan saham dengan jelas dan baik.
                 </li>
             </ol>
@@ -87,15 +84,10 @@
                 Selamat bermain!
             </p>
 
-            <label for="agree-checkbox" class="flex items-center gap-3 mb-6 mt-6">
-                <input type="checkbox" id="agree-checkbox" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
-                <span class="text-center">Mulai Bermain!</span>
-            </label>
-
             <div class="flex justify-center">
                 <button onclick="confirmConsent()" 
                     class="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-25 transition ease-in-out duration-150">
-                    Setuju & Mulai
+                    Mulai
                 </button>
             </div>
         </div>
@@ -201,7 +193,7 @@
             tableContainer.className = 'w-[80%] max-w-4xl mx-auto';
 
             const table = document.createElement('table');
-            table.className = 'w-full text-sm table-fixed border border-gray-300 rounded-md shadow-sm bg-white dark:bg-gray-800';
+            table.className = 'w-full text-sm table-fixed border border-gray-300 rounded-md shadow-sm';
 
             const tbody = document.createElement('tbody');
 
@@ -216,11 +208,10 @@
                     <div class="flex flex-col">
                         <div class="flex items-center gap-2">
                             <p class="font-semibold">${company.name} (${company.code})</p>
-                            <p class="text-green-600 ml-1 blink">${company.return}</p>
+                            <p class="text-green-600 font-semibold ml-1 blink bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 ">${company.return.toFixed(2)} %</p>
                         </div>
 
                         <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">${company.description}</p>
-                        <p class="text-red-600 font-semibold mt-1">Risk: ${company.risk}</p>
 
 
                         <div class="flex justify-end mt-2">
@@ -332,9 +323,8 @@
             document.getElementById('current-balance').innerText = formatRupiah(currentBalance);
 
             button.disabled = true;
-            button.classList.remove('bg-white', 'hover:bg-gray-50', 'dark:bg-gray-800', 'dark:hover:bg-gray-700');
-            button.classList.add('bg-red-500', 'text-white', 'cursor-not-allowed');
-            button.innerText = 'Bought';
+            button.classList.remove('bg-white', 'dark:bg-gray-800', 'hover:bg-gray-50', 'dark:hover:bg-gray-700');
+            button.classList.add('bg-red-600', 'cursor-not-allowed', 'text-white');
 
             console.log('Bought company ID:', companyId, 'Reason:', reason);
 
@@ -367,11 +357,11 @@
         }
 
         function confirmConsent() {
-            const checkbox = document.getElementById('agree-checkbox');
+            /* const checkbox = document.getElementById('agree-checkbox');
             if (!checkbox.checked) {
                 alert('Please check the consent box first.');
                 return;
-            }
+            } */
             document.getElementById('consent-modal').style.display = 'none';
             showContent(currentIndex);
         }

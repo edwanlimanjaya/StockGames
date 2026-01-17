@@ -8,7 +8,7 @@
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
 
-    <div id="consent-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div id="consent-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" style="display:none;">
         <div class="bg-white dark:bg-gray-800 p-6 rounded-lg max-w-2xl w-full max-h-[80vh] overflow-y-auto text-sm text-gray-900 dark:text-gray-100">
             <div class="flex justify-center">
                 <h2 class="text-lg font-bold mb-4">
@@ -22,10 +22,10 @@
             </p>
 
             <p class="mb-4 text-justify">
-                Tujuan dari eksperimen ini adalah mengetahui efek disposisi pemilihan saham yang dipengaruhi oleh tipe attachment to God.
-                Hasil yang diharapkan adalah pengembangan literasi keuangan yang membantu investor untuk pengambilan keputusan sesuai risiko etika dan potensi keuntungan.
-                Kami memohon izin dari partisipan untuk menggunakan respon dan data sebagai bahan analisis penelitian disertasi ini.
-                Data yang anda berikan akan dijaga kerahasiaannya dan tidak akan diberikan kepada pihak yang tidak berkepentingan.
+                Tujuan eksperimen ini adalah mengetahui pemilihan saham yang dipengaruhi oleh tipe attachment to God. 
+                Hasil yang diharapkan adalah pengembangan literasi keuangan khususnya pasar modal, sehingga dapat membantu investor mengambil keputusan dengan beberapa risiko yang dapat diterima. 
+                Kami memohon izin  dari partisipan untuk menggunakan respon dan data sebagai bahan analisis penelitian disertasi ini. 
+                Data yang anda berikan akan dijaga kerahasiannya dan tidak akan diberikan kepada pihak yang tidak berkepentingan.
             </p>
 
             <p class="mb-4 text-justify">
@@ -92,26 +92,31 @@
         </div>
 
         <div class="flex items-center justify-end mt-4">
-            @if (Route::has('register'))
+            <!-- @if (Route::has('register'))
                 <a
                     href="{{ route('register') }}"
                     class="inline-block px-5 py-1.5 dark:text-[#EDEDEC] border-transparent hover:border-[#1915014a] border text-[#1b1b18] dark:hover:border-[#3E3E3A] dark:hover:border-[#62605b] rounded-sm text-sm leading-normal">
                     Register
                 </a>
-            @endif
-            <x-primary-button class="ms-3">
+            @endif -->
+            <x-primary-button class="ms-3" type="button" onclick="showConsentModal()">
                 {{ __('Log in') }}
             </x-primary-button>
         </div>
     </form>
     <script>
+        function showConsentModal() { 
+            document.getElementById('consent-modal').style.display = 'flex'; 
+        }
+
         function confirmConsent() {
             const checkbox = document.getElementById('agree-checkbox');
             if (!checkbox.checked) {
                 alert('Please check the consent box first.');
                 return;
             }
-            document.getElementById('consent-modal').style.display = 'none';
+            // document.getElementById('consent-modal').style.display = 'none';
+            document.querySelector('form[action="{{ route('login') }}"]').submit();
         }
     </script>
 </x-guest-layout>
