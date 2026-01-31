@@ -45,14 +45,24 @@ class GameController extends Controller
             }
 
             $questions = GameQuestion::where('session', $session)->get();
+
             $companyIds = $questions->flatMap(fn($q) => json_decode($q->options))->unique();
             $companies = Company::whereIn('id', $companyIds)->get()->keyBy('id');
+
+            $allCompanyIds = GameQuestion::all()->flatMap(fn($q) => json_decode($q->options))->unique(); 
+            $allCompanies = Company::whereIn('id', $allCompanyIds)->get()->keyBy('id');
+
             $questionIds = $questions->pluck('id')->unique();
             $backgroundImages = GameQuestion::whereIn('id', $questionIds)->pluck('image', 'id');
+            $previousAnswers = DB::table('game_answers')->join('game_questions', 'game_answers.game_question_id', '=', 'game_questions.id') 
+            ->where('game_answers.user_id', $userId) 
+            ->select('game_answers.*', 'game_questions.session') 
+            ->get();
+            $hasAnswers = $previousAnswers->isNotEmpty();
 
             Log::info("Background Images: $backgroundImages");
 
-            return view('game.game', compact('questions', 'companies', 'session', 'backgroundImages'));
+            return view('game.game', compact('questions', 'companies', 'session', 'backgroundImages', 'previousAnswers', 'hasAnswers', 'allCompanies'));
         } catch (\Exception $e) {
             return redirect()->route('login')->withErrors(['auth' => $e->getMessage()]);
         }

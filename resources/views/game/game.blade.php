@@ -93,10 +93,16 @@
         </div>
     </div>
 
+    <div id="all-session-summary"
+        class="py-12 max-w-7xl mx-auto sm:px-6 lg:px-8 bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+        @if(!$hasAnswers)
+            <p class="text-gray-500">Belum menjawab</p>
+        @endif
+    </div>
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg" style="background-color: rgba(255,255,255,0.8);">
+            <div id="session-card" class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg" style="background-color: rgba(255,255,255,0.8);">
             <div class="p-6 text-gray-900 dark:text-gray-100">
                     <div class="flex justify-end mt-2" id="balance">
                         <x-input-label id="current-balance">{{ __('10000000') }}</x-input-label>
@@ -135,10 +141,16 @@
     <script>
         const questions = @json($questions);
         const companies = @json($companies->keyBy('id'));
+        const allCompanies = @json($allCompanies);
         let currentIndex = 0;
         let selectedCompanies = [];
         let finalAnswers = [];
         const session = {{ $session }};
+        const previousAnswers = @json($previousAnswers);
+        const hasAnswers = @json($hasAnswers);
+
+        console.log("Previous Answers:", previousAnswers);
+        console.log("Companies: ", companies);
 
         function formatRupiah(value) {
             return new Intl.NumberFormat('id-ID', {
@@ -280,8 +292,16 @@
                 showContent(currentIndex);
                 setBackground(currentIndex);
             } else {
-                document.getElementById('next-btn').style.display = 'none';
-                document.getElementById('submit-form').style.display = 'block';
+                /* document.getElementById('next-btn').style.display = 'none';
+                document.getElementById('submit-form').style.display = 'none';
+                document.getElementById('balance').style.display = 'none';
+                document.querySelector('.mt-6.space-y-6').style.display = 'none'; */
+
+                /* document.getElementById('session-card').classList.add('hidden');
+                document.getElementById('submit_hidden').classList.remove('hidden');
+                document.getElementById(`submit_${session}`).classList.add('hidden'); */
+
+                /* addSessionSummary(session, finalAnswers);
 
                 const form = document.getElementById('submit-form');
 
@@ -295,7 +315,23 @@
                 sessionInput.type = 'hidden';
                 sessionInput.name = 'session_id';
                 sessionInput.value = {{ $session }};
-                form.appendChild(sessionInput);
+                form.appendChild(sessionInput); */
+
+                document.getElementById('session-card').classList.add('hidden'); 
+
+                renderSessionSummary(session, finalAnswers); 
+
+                const answersInput = document.getElementById(`answers_${session}`); 
+                
+                if (answersInput) { 
+                    answersInput.value = JSON.stringify(finalAnswers); 
+                }
+
+                const submitBtn = document.getElementById(`submit_${session}`); 
+                
+                if (submitBtn) { 
+                    submitBtn.classList.remove('hidden'); 
+                }
             }
         }
 
@@ -330,6 +366,11 @@
 
             selectedCompanies.push({ id: companyId, reason: reason });
 
+            renderSessionSummary(session, [{ 
+                question_id: questions[currentIndex].id, 
+                selected: selectedCompanies 
+            }]);
+
             updateNextButtonState();
         }
 
@@ -355,6 +396,136 @@
 
             document.body.classList.add('custom-bg-' + qId);
         }
+
+        function renderSessionSummary(sessionNumber, answers) {
+            const container = document.getElementById('all-session-summary');
+            container.classList.remove('hidden');
+
+            let wrapper = document.getElementById(`summary-session-${sessionNumber}`);
+            
+            if (!wrapper) {
+                // wrapper baru → render semua jawaban
+                wrapper = document.createElement('div');
+                wrapper.id = `summary-session-${sessionNumber}`;
+                wrapper.className = 'mt-6 border rounded shadow-sm bg-white dark:bg-gray-800';
+                container.appendChild(wrapper);
+
+                const header = document.createElement('button');
+                header.className = 'w-full text-left px-4 py-2 font-semibold bg-gray-200 dark:bg-gray-600';
+                header.innerText = `Portofolio Sesi ${sessionNumber}`;
+                wrapper.appendChild(header);
+
+                const content = document.createElement('div');
+                content.className = 'px-4 py-2 hidden';
+                wrapper.appendChild(content);
+
+                header.addEventListener('click', () => {
+                    content.classList.toggle('hidden');
+                });
+
+                const table = document.createElement('table');
+                table.className = 'w-full text-sm border border-gray-300 rounded-md shadow-sm';
+
+                const thead = document.createElement('thead');
+                thead.innerHTML = `
+                    <tr class="bg-gray-100 dark:bg-gray-700">
+                        <th class="px-2 py-1 border">Nama Perusahaan</th>
+                        <th class="px-2 py-1 border">Return (%)</th>
+                        <th class="px-2 py-1 border">Alasan</th>
+                    </tr>
+                `;
+                table.appendChild(thead);
+
+                const tbody = document.createElement('tbody');
+                // render semua jawaban sesi ini sekali
+                answers.forEach(answer => {
+                    answer.selected.forEach(sel => {
+                        const company = allCompanies[sel.id];
+                        if (!company) return;
+                        const row = document.createElement('tr');
+                        row.dataset.qid = answer.question_id;
+                        row.dataset.cid = sel.id;
+                        row.innerHTML = `
+                            <td class="px-2 py-1 border">${company.name} (${company.code})</td>
+                            <td class="px-2 py-1 border">${company.return.toFixed(2)}</td>
+                            <td class="px-2 py-1 border">${sel.reason}</td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+                });
+
+                table.appendChild(tbody);
+                content.appendChild(table);
+
+                // form submit khusus sesi ini
+                const form = document.createElement('form'); 
+                form.method = 'post'; 
+                form.action = "{{ route('game-session.submit') }}"; 
+                form.className = 'mt-4'; 
+                form.innerHTML = ` @csrf 
+                    <input type="hidden" name="answers" id="answers_${sessionNumber}">
+                    <input type="hidden" name="session_id" value='${sessionNumber}'>
+                    <button type="submit" id="submit_${sessionNumber}" 
+                        class="hidden inline-flex items-center px-4 py-2 bg-gray-800 dark:bg-gray-200 border border-transparent rounded-md font-semibold text-xs text-white dark:text-gray-800 uppercase tracking-widest hover:bg-gray-700 dark:hover:bg-white focus:bg-gray-700 dark:focus:bg-white active:bg-gray-900 dark:active:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150">
+                        Submit
+                    </button>`;
+                content.appendChild(form);
+            } else {
+                // wrapper sudah ada → cukup tambahkan jawaban terakhir
+                const tbody = wrapper.querySelector('tbody');
+                const latestAnswer = answers[answers.length - 1];
+
+                latestAnswer.selected.forEach(sel => {
+                    const company = allCompanies[sel.id];
+                    if (!company) return;
+
+                    const exists = tbody.querySelector(
+                        `tr[data-qid="${latestAnswer.question_id}"][data-cid="${sel.id}"]`
+                    );
+                    if (exists) return;
+
+                    const row = document.createElement('tr');
+                    row.dataset.qid = latestAnswer.question_id;
+                    row.dataset.cid = sel.id;
+                    row.innerHTML = `
+                        <td class="px-2 py-1 border">${company.name} (${company.code})</td>
+                        <td class="px-2 py-1 border">${company.return.toFixed(2)}</td>
+                        <td class="px-2 py-1 border">${sel.reason}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }
+
+            // update hidden input answers dengan jawaban sesi ini (semua)
+            const answersInput = wrapper.querySelector(`#answers_${sessionNumber}`);
+            if (answersInput) {
+                answersInput.value = JSON.stringify(answers);
+            }
+        }
+
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (previousAnswers && previousAnswers.length > 0) {
+                const grouped = {};
+                previousAnswers.forEach(ans => {
+                    const sessionId = ans.session; // semua sesi
+                    if (!grouped[sessionId]) grouped[sessionId] = [];
+                    grouped[sessionId].push({
+                        question_id: ans.game_question_id,
+                        selected: JSON.parse(ans.choices).map((id, idx) => ({
+                            id: id,
+                            reason: JSON.parse(ans.reasons)[idx] ?? ''
+                        }))
+                    });
+                });
+
+                Object.keys(grouped).forEach(sessionId => {
+                    // panggil renderSessionSummary, bukan addSessionSummary
+                    renderSessionSummary(sessionId, grouped[sessionId]);
+                });
+            }
+        });
+
 
         function confirmConsent() {
             /* const checkbox = document.getElementById('agree-checkbox');

@@ -6,7 +6,7 @@
     </style>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Financial Literacy') }}
+            {{ __('Pengalaman Keuangan') }}
         </h2>
     </x-slot>
     
@@ -16,18 +16,19 @@
         <div class="bg-white dark:bg-gray-800 p-6 rounded-lg max-w-2xl w-full max-h-[80vh] overflow-y-auto text-sm text-gray-900 dark:text-gray-100">
             <div class="flex justify-center">
                 <h2 class="text-lg font-bold mb-4">
-                    Selamat Datang, Games Investasi
+                    Self Assesment
                 </h2>
             </div>
             
             <p class="mb-4 text-justify">
-                Sebelum masuk pada sesi games, para investor diminta untuk melakukan self assesment dengan menjawab pertanyaan pendahuluan. Para investor diharuskan menjawab dengan sejujur-jujurnya sesuai dengan kondisi yang dialami para investor. 
+                Pada sesi ini, para investor diminta untuk melakukan self assesment, 
+                dan diharuskan menjawab dengan sejujur-jujurnya sesuai kondisi yang dialami  investor. 
             </p>
 
-            <label for="agree-checkbox" class="flex items-center gap-3 mb-6">
+            <!-- <label for="agree-checkbox" class="flex items-center gap-3 mb-6">
                 <input type="checkbox" id="agree-checkbox" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
                 <span>Dengan ini saya setuju melakukan <i>self assessment</i> dan bersedia menjawab setiap pertanyaan pendahuluan dengan sejujur-jujurnya.</span>
-            </label>
+            </label> -->
 
             <div class="flex justify-center">
                 <button onclick="confirmConsent()" 
@@ -161,11 +162,11 @@
         }        
 
         function confirmConsent() {
-            const checkbox = document.getElementById('agree-checkbox');
-            if (!checkbox.checked) {
-                alert('Please check the consent box first.');
-                return;
-            }
+            // const checkbox = document.getElementById('agree-checkbox');
+            // if (!checkbox.checked) {
+            //     alert('Please check the consent box first.');
+            //     return;
+            // }
             document.getElementById('consent-modal').style.display = 'none';
             renderAnswerInput(currentIndex); // mulai soal setelah setuju
         }

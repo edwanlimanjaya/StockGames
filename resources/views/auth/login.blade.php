@@ -92,13 +92,13 @@
         </div>
 
         <div class="flex items-center justify-end mt-4">
-            <!-- @if (Route::has('register'))
+            @if (Route::has('register'))
                 <a
                     href="{{ route('register') }}"
                     class="inline-block px-5 py-1.5 dark:text-[#EDEDEC] border-transparent hover:border-[#1915014a] border text-[#1b1b18] dark:hover:border-[#3E3E3A] dark:hover:border-[#62605b] rounded-sm text-sm leading-normal">
                     Register
                 </a>
-            @endif -->
+            @endif
             <x-primary-button class="ms-3" type="button" onclick="showConsentModal()">
                 {{ __('Log in') }}
             </x-primary-button>

@@ -88,13 +88,11 @@
             container.innerHTML = '';
 
             const baseInputClass = 'w-full h-2 mt-2 bg-gray-300 rounded-lg appearance-none cursor-pointer focus:outline-none focus:ring-0';
+            const sliderDirection = question.direction === 'reverse' ? 'direction-rtl' : '';
 
-            // generate label angka sesuai direction
-            const labels = question.direction === 'reverse'
-                ? ['4', '3', '2', '1']
-                : ['1', '2', '3', '4'];
+            // label selalu 1–4
+            const labels = ['1','2','3','4'];
 
-            // bikin HTML label dengan garis vertikal pendek di atas angka
             const labelHTML = labels.map(label => `
                 <div class="flex flex-col items-center w-1/4">
                     <div style="height: 0.8em; border-left: 0.15em solid black;"></div>
@@ -106,7 +104,7 @@
                 <div class="flex flex-col max-w-md">
                     <!-- Slider -->
                     <input type="range" id="score-input" name="score-input" value="2" min="1" max="4" step="1"
-                        class="${baseInputClass}" required />
+                        class="${baseInputClass} ${sliderDirection}" required />
 
                     <!-- Angka + garis vertikal -->
                     <div class="flex justify-between text-sm mt-2 w-full">
@@ -115,6 +113,7 @@
                 </div>
             `;
         }
+
 
         function nextQuestion() {
             const rawValue = parseInt(document.getElementById('score-input').value);
