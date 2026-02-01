@@ -292,31 +292,6 @@
                 showContent(currentIndex);
                 setBackground(currentIndex);
             } else {
-                /* document.getElementById('next-btn').style.display = 'none';
-                document.getElementById('submit-form').style.display = 'none';
-                document.getElementById('balance').style.display = 'none';
-                document.querySelector('.mt-6.space-y-6').style.display = 'none'; */
-
-                /* document.getElementById('session-card').classList.add('hidden');
-                document.getElementById('submit_hidden').classList.remove('hidden');
-                document.getElementById(`submit_${session}`).classList.add('hidden'); */
-
-                /* addSessionSummary(session, finalAnswers);
-
-                const form = document.getElementById('submit-form');
-
-                const input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = 'answers';
-                input.value = JSON.stringify(finalAnswers);
-                form.appendChild(input);
-
-                const sessionInput = document.createElement('input');
-                sessionInput.type = 'hidden';
-                sessionInput.name = 'session_id';
-                sessionInput.value = {{ $session }};
-                form.appendChild(sessionInput); */
-
                 document.getElementById('session-card').classList.add('hidden'); 
 
                 renderSessionSummary(session, finalAnswers); 
@@ -429,28 +404,38 @@
                 const thead = document.createElement('thead');
                 thead.innerHTML = `
                     <tr class="bg-gray-100 dark:bg-gray-700">
+                        <th class="px-2 py-1 border">No</th>
                         <th class="px-2 py-1 border">Nama Perusahaan</th>
+                        <th class="px-2 py-1 border">Nilai Beli</th>
                         <th class="px-2 py-1 border">Return (%)</th>
+                        <th class="px-2 py-1 border">Nilai Saat Ini</th>
                         <th class="px-2 py-1 border">Alasan</th>
                     </tr>
                 `;
                 table.appendChild(thead);
 
                 const tbody = document.createElement('tbody');
-                // render semua jawaban sesi ini sekali
+                let number = 1;
+
                 answers.forEach(answer => {
                     answer.selected.forEach(sel => {
                         const company = allCompanies[sel.id];
+                        const price = formatRupiah(1000000);
+                        const todayValue = formatRupiah(((company.return * 1000000)/100) + 1000000);
                         if (!company) return;
                         const row = document.createElement('tr');
                         row.dataset.qid = answer.question_id;
                         row.dataset.cid = sel.id;
                         row.innerHTML = `
+                            <td class="px-2 py-1 border">${number}</td>
                             <td class="px-2 py-1 border">${company.name} (${company.code})</td>
+                            <td class="px-2 py-1 border">${price}</td>
                             <td class="px-2 py-1 border">${company.return.toFixed(2)}</td>
+                            <td class="px-2 py-1 border">${todayValue}</td>
                             <td class="px-2 py-1 border">${sel.reason}</td>
                         `;
                         tbody.appendChild(row);
+                        number++;
                     });
                 });
 

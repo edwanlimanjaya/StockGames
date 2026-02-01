@@ -1,4 +1,115 @@
 <x-app-layout>
+    <style>
+        .range {
+        position: relative;
+        }
+
+        .range input {
+        width: 100%;
+        position: absolute;
+        top: -2px;
+        height: 0;
+        -webkit-appearance: none;
+        }
+
+        .range input:focus {
+        background: none;
+        outline: none;
+        }
+
+        /* Thumb */
+        .range input::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 18px;
+        height: 18px;
+        margin: -8px 0 0;
+        border-radius: 50%;
+        background: #37adbf;
+        cursor: pointer;
+        border: 0 !important;
+        }
+        .range input::-moz-range-thumb {
+        width: 18px;
+        height: 18px;
+        margin: -8px 0 0;
+        border-radius: 50%;
+        background: #37adbf;
+        cursor: pointer;
+        border: 0 !important;
+        }
+        .range input::-ms-thumb {
+        width: 18px;
+        height: 18px;
+        margin: -8px 0 0;
+        border-radius: 50%;
+        background: #37adbf;
+        cursor: pointer;
+        border: 0 !important;
+        }
+
+        /* Track */
+        .range input::-webkit-slider-runnable-track {
+        width: 100%;
+        height: 2px;
+        cursor: pointer;
+        background: #b2b2b2;
+        }
+        .range input::-moz-range-track {
+        width: 100%;
+        height: 2px;
+        cursor: pointer;
+        background: #b2b2b2;
+        }
+        .range input::-ms-track {
+        width: 100%;
+        height: 2px;
+        cursor: pointer;
+        background: #b2b2b2;
+        border-color: transparent;
+        color: transparent;
+        }
+
+        /* Labels below slider */
+        .range-labels {
+        margin: 18px -41px 0;
+        padding: 0;
+        list-style: none;
+        }
+        .range-labels li {
+        position: relative;
+        float: left;
+        width: 90.25px; /* sesuai contoh: 550px / 7 label */
+        text-align: center;
+        color: #b2b2b2;
+        font-size: 14px;
+        cursor: pointer;
+        }
+        .range-labels li::before {
+        position: absolute;
+        top: -25px;
+        right: 0;
+        left: 0;
+        content: "";
+        margin: 0 auto;
+        width: 9px;
+        height: 9px;
+        background: #b2b2b2;
+        border-radius: 50%;
+        }
+        .range-labels li.active {
+        color: #37adbf;
+        }
+        .range-labels li.selected::before {
+        background: #37adbf;
+        }
+        .range-labels li.active.selected::before {
+        display: none;
+        }
+
+    </style>
+    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
             {{ __('Attachment to God') }}
@@ -38,7 +149,7 @@
                         <x-input-label id="question-title">
                             {{ $questions[0]->title }}
                         </x-input-label>
-                        <div id="answer-container" class="flex gap-4 mt-2">
+                        <div id="answer-container" class="flex gap-4 mt-2 px-6">
                         </div>
                     </div>
                     <div class="mt-6 space-y-6">
@@ -101,17 +212,40 @@
             `).join('');
 
             container.innerHTML = `
-                <div class="flex flex-col max-w-md">
-                    <!-- Slider -->
-                    <input type="range" id="score-input" name="score-input" value="2" min="1" max="4" step="1"
-                        class="${baseInputClass} ${sliderDirection}" required />
-
-                    <!-- Angka + garis vertikal -->
-                    <div class="flex justify-between text-sm mt-2 w-full">
-                        ${labelHTML}
+                <div class="flex flex-col max-w-md mt-4">
+                    <div class="range">
+                        <input type="range" id="score-input" name="score-input" value="2" min="1" max="4" step="1"
+                            class="${sliderDirection}" required />
                     </div>
+                    <ul class="range-labels">
+                        <li>1 <br> Sangat Tidak Setuju</li>
+                        <li class="active selected">2 <br> Tidak Setuju</li>
+                        <li>3 <br> Setuju</li>
+                        <li>4 <br> Sangat Setuju</li>
+                    </ul>
                 </div>
             `;
+
+            var sheet = document.createElement("style"), 
+                $rangeInput = $(container).find(".range input"), 
+                prefs = ["webkit-slider-runnable-track", "moz-range-track", "ms-track"];
+
+            document.body.appendChild(sheet); 
+            
+            var getTrackStyle = function (el) { var curVal = el.value,
+                val = (curVal - 1) * 25, style = "";
+                $(container).find(".range-labels li").removeClass("active selected");
+                var curLabel = $(container).find(".range-labels li:nth-child(" + curVal + ")"); 
+                curLabel.addClass("active selected"); curLabel.prevAll().addClass("selected");
+                for (var i = 0; i < prefs.length; i++) { 
+                    style += ".range {background: linear-gradient(to right, #37adbf 0%, #37adbf " + val + "%, #fff " + val + "%, #fff 100%)}"; 
+                    style += ".range input::-" + prefs[i] + "{background: linear-gradient(to right, #37adbf 0%, #37adbf " + val + "%, #b2b2b2 " + val + "%, #b2b2b2 100%)}"; 
+                } 
+                return style;
+            }
+
+            $rangeInput.on("input", function () { sheet.textContent = getTrackStyle(this); });
+            $(container).find(".range-labels li").on("click", function () { var index = $(this).index(); $rangeInput.val(index + 1).trigger("input"); });
         }
 
 
